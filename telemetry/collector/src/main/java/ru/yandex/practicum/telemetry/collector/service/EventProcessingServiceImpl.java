@@ -26,12 +26,20 @@ public class EventProcessingServiceImpl implements EventProcessingService {
     @Override
     public void processHubEvent(HubEvent event) {
         log.info("Sending hub event to topic [{}]: {}", hubEventsTopic, event);
-        kafkaClient.send(hubEventsTopic, hubEventsMapper.mapToHubEventAvro(event));
+        kafkaClient.send(
+                hubEventsTopic,
+                hubEventsMapper.mapToHubEventAvro(event),
+                event.getTimestamp().toEpochMilli(),
+                event.getHubId());
     }
 
     @Override
     public void processSensorEvent(SensorEvent event) {
         log.info("Sending sensor event to topic [{}]: {}", sensorEventsTopic, event);
-        kafkaClient.send(sensorEventsTopic, sensorEventsMapper.mapToSensorEventAvro(event));
+        kafkaClient.send(
+                sensorEventsTopic,
+                sensorEventsMapper.mapToSensorEventAvro(event),
+                event.getTimestamp().toEpochMilli(),
+                event.getHubId());
     }
 }

@@ -32,7 +32,7 @@ public class KafkaClient {
         return producer;
     }
 
-    public void send(String topic, SpecificRecordBase record) {
-        this.getProducer().send(new ProducerRecord<>(topic, record));
+    public void send(String topic, SpecificRecordBase record, Long timestamp, String hubId) {
+        this.getProducer().send(new ProducerRecord<>(topic, null, timestamp, hubId, record));
     }
 }
