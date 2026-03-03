@@ -11,7 +11,6 @@ public class ScenarioConditionMapper {
                 .setType(ConditionTypeAvro.valueOf(data.getType().name()))
                 .setOperation(ConditionOperationAvro.valueOf(data.getOperation().name()))
                 .setSensorId(data.getSensorId())
-                .setType(ConditionTypeAvro.valueOf(data.getType().name()))
                 .setValue(data.getValue())
                 .build();
     }
