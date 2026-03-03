@@ -1,12 +1,13 @@
 package ru.yandex.practicum.telemetry.collector.dto.event.hub;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import ru.yandex.practicum.telemetry.collector.dto.event.hub.scenario.DeviceAction;
 import ru.yandex.practicum.telemetry.collector.dto.event.hub.scenario.ScenarioCondition;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ import java.util.List;
 @ToString(callSuper = true)
 public class ScenarioAddedEvent extends HubEvent {
     @NotBlank
+    @Size(min = 3)
     private String name;
 
     @NotNull
