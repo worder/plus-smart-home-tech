@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.telemetry.serializer.GeneralAvroSerializer;
 
+import java.time.Duration;
 import java.util.Properties;
 
 @Component
@@ -41,7 +42,7 @@ public class KafkaClient {
     public void close() {
         if (producer != null) {
             producer.flush();
-            producer.close();
+            producer.close(Duration.ofSeconds(5));
         }
     }
 }
