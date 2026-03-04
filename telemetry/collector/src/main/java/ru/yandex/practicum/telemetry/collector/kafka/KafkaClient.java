@@ -1,5 +1,6 @@
 package ru.yandex.practicum.telemetry.collector.kafka;
 
+import jakarta.annotation.PreDestroy;
 import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
@@ -34,5 +35,13 @@ public class KafkaClient {
 
     public void send(String topic, SpecificRecordBase record, Long timestamp, String hubId) {
         this.getProducer().send(new ProducerRecord<>(topic, null, timestamp, hubId, record));
+    }
+
+    @PreDestroy
+    public void close() {
+        if (producer != null) {
+            producer.flush();
+            producer.close();
+        }
     }
 }
