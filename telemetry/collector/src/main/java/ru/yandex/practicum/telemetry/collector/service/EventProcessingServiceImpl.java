@@ -4,11 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.telemetry.collector.dto.event.hub.HubEvent;
-import ru.yandex.practicum.telemetry.collector.dto.event.sensor.SensorEvent;
+import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
+import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
 import ru.yandex.practicum.telemetry.collector.kafka.KafkaClient;
 import ru.yandex.practicum.telemetry.collector.mapper.hub.HubEventsMapper;
 import ru.yandex.practicum.telemetry.collector.mapper.sensor.SensorEventsMapper;
+
+import java.time.Instant;
 
 @Slf4j
 @Service
@@ -24,22 +26,26 @@ public class EventProcessingServiceImpl implements EventProcessingService {
     private String sensorEventsTopic;
 
     @Override
-    public void processHubEvent(HubEvent event) {
+    public void processHubEvent(HubEventProto event) {
         log.info("Sending hub event to topic [{}]: {}", hubEventsTopic, event);
         kafkaClient.send(
                 hubEventsTopic,
                 hubEventsMapper.mapToHubEventAvro(event),
-                event.getTimestamp().toEpochMilli(),
+                Instant.ofEpochSecond(
+                        event.getTimestamp().getSeconds(),
+                        event.getTimestamp().getNanos()).toEpochMilli(),
                 event.getHubId());
     }
 
     @Override
-    public void processSensorEvent(SensorEvent event) {
+    public void processSensorEvent(SensorEventProto event) {
         log.info("Sending sensor event to topic [{}]: {}", sensorEventsTopic, event);
         kafkaClient.send(
                 sensorEventsTopic,
                 sensorEventsMapper.mapToSensorEventAvro(event),
-                event.getTimestamp().toEpochMilli(),
+                Instant.ofEpochSecond(
+                        event.getTimestamp().getSeconds(),
+                        event.getTimestamp().getNanos()).toEpochMilli(),
                 event.getHubId());
     }
 }
