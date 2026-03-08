@@ -19,4 +19,6 @@ public class Action {
 
     @Enumerated(EnumType.STRING)
     private ActionTypeAvro type;
+
+    private Integer value;
 }

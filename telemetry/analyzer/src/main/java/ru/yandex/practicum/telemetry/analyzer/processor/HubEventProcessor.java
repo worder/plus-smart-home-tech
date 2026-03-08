@@ -2,9 +2,10 @@ package ru.yandex.practicum.telemetry.analyzer.processor;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
-import ru.yandex.practicum.telemetry.analyzer.handler.HubEventHandler;
+import ru.yandex.practicum.telemetry.analyzer.handler.hub.event.HubEventHandler;
 import ru.yandex.practicum.telemetry.deserializer.HubEventDeserializer;
 
 import java.util.List;
@@ -15,9 +16,14 @@ import java.util.stream.Collectors;
 @Service
 public class HubEventProcessor extends BaseRecordProcessor<HubEventAvro> implements Runnable {
 
-    private String consumerGroupId = "analyzer";
-    private String bootstrapServers =  "localhost:9092";
-    private String topic = "telemetry.hubs.v1";
+    @Value("${telemetry.analyzer.kafka.bootstrap-servers}")
+    private String bootstrapServers;
+
+    @Value("${telemetry.analyzer.kafka.group-id}")
+    private String consumerGroupId;
+
+    @Value("${telemetry.analyzer.kafka.topic.hub-events}")
+    private String topic;
 
     private final Map<Class<?>, HubEventHandler<?>> handlers;
 

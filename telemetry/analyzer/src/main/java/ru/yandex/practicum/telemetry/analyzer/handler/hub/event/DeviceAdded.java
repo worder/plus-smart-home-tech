@@ -1,4 +1,4 @@
-package ru.yandex.practicum.telemetry.analyzer.handler;
+package ru.yandex.practicum.telemetry.analyzer.handler.hub.event;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,12 +17,15 @@ public class DeviceAdded implements HubEventHandler<DeviceAddedEventAvro> {
     @Override
     public void handleEvent(HubEventAvro event) {
         DeviceAddedEventAvro payload = (DeviceAddedEventAvro) event.getPayload();
-        sensorRepository.save(Sensor.builder()
-                .id(payload.getId())
-                .hubId(event.getHubId())
-                .build());
-
-        log.info("Device added event: {}", payload);
+        if (sensorRepository.findById(payload.getId()).isEmpty()) {
+            sensorRepository.save(Sensor.builder()
+                    .id(payload.getId())
+                    .hubId(event.getHubId())
+                    .build());
+            log.info("Device added event: {}", payload);
+        } else {
+            log.warn("Duplicate device add: {}", payload);
+        }
     }
 
     @Override
