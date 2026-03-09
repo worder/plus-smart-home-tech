@@ -48,6 +48,7 @@ public class KafkaClientImpl implements KafkaClient {
             config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
             config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getCanonicalName());
             config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SensorEventDeserializer.class);
+            config.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
 
             this.consumer = new KafkaConsumer<>(config);
 

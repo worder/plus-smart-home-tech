@@ -34,11 +34,15 @@ public class AggregationStarter {
 
             while (true) {
                 ConsumerRecords<String, SpecificRecordBase> records = consumer.poll(Duration.ofSeconds(5));
+                if (records.isEmpty()) {
+                    continue;
+                }
+
                 for (ConsumerRecord<String, SpecificRecordBase> record : records) {
                     aggregatorService.aggregateSensorEvent((SensorEventAvro) record.value());
                 }
 
-                consumer.commitAsync();
+                consumer.commitSync();
             }
         } catch (WakeupException ignore) {
         } finally {

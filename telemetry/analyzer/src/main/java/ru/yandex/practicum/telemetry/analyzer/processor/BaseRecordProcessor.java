@@ -16,7 +16,7 @@ import java.util.Properties;
 public abstract class BaseRecordProcessor<T extends SpecificRecordBase> implements Runnable{
     protected KafkaConsumer<String, T> consumer;
 
-    public KafkaConsumer<String, T> getConsumer() {
+    protected KafkaConsumer<String, T> getConsumer() {
         if (consumer == null) {
             Properties config = new Properties();
 
@@ -29,7 +29,7 @@ public abstract class BaseRecordProcessor<T extends SpecificRecordBase> implemen
         return consumer;
     }
 
-    protected abstract void handleRecord(T record);
+    protected abstract void handleRecords(ConsumerRecords<String, T> records);
 
     protected abstract void configureConsumer(Properties config);
 
@@ -44,11 +44,7 @@ public abstract class BaseRecordProcessor<T extends SpecificRecordBase> implemen
 
             while (true) {
                 ConsumerRecords<String, T> records = consumer.poll(Duration.ofSeconds(5));
-                for (ConsumerRecord<String, T> record : records) {
-                    this.handleRecord(record.value());
-                }
-
-                consumer.commitAsync();
+                this.handleRecords(records);
             }
         } catch (WakeupException ignore) {
         } finally {

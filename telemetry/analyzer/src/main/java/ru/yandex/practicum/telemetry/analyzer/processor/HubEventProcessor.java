@@ -1,6 +1,8 @@
 package ru.yandex.practicum.telemetry.analyzer.processor;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -19,10 +21,10 @@ public class HubEventProcessor extends BaseRecordProcessor<HubEventAvro> impleme
     @Value("${telemetry.analyzer.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
-    @Value("${telemetry.analyzer.kafka.group-id}")
+    @Value("${telemetry.analyzer.kafka.consumer.hub-events.group}")
     private String consumerGroupId;
 
-    @Value("${telemetry.analyzer.kafka.topic.hub-events}")
+    @Value("${telemetry.analyzer.kafka.consumer.hub-events.topic}")
     private String topic;
 
     private final Map<Class<?>, HubEventHandler<?>> handlers;
@@ -39,6 +41,7 @@ public class HubEventProcessor extends BaseRecordProcessor<HubEventAvro> impleme
         config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getCanonicalName());
         config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, HubEventDeserializer.class.getCanonicalName());
+        config.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
     }
 
     @Override
@@ -47,11 +50,20 @@ public class HubEventProcessor extends BaseRecordProcessor<HubEventAvro> impleme
     }
 
     @Override
-    protected void handleRecord(HubEventAvro record) {
-        if (!handlers.containsKey(record.getPayload().getClass())) {
-            throw new RuntimeException("No handler for " + record.getClass());
+    protected void handleRecords(ConsumerRecords<String, HubEventAvro> records) {
+        if (records.isEmpty()) {
+            return;
         }
 
-        handlers.get(record.getPayload().getClass()).handleEvent(record);
+        for (ConsumerRecord<String, HubEventAvro> consumerRecord : records) {
+            HubEventAvro event = consumerRecord.value();
+            if (!handlers.containsKey(event.getPayload().getClass())) {
+                throw new RuntimeException("No handler for " + event.getClass());
+            }
+
+            handlers.get(event.getPayload().getClass()).handleEvent(event);
+        }
+
+        this.getConsumer().commitSync();
     }
 }

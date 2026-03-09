@@ -2,6 +2,8 @@ package ru.yandex.practicum.telemetry.analyzer.processor;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -18,13 +20,13 @@ public class SnapshotProcessor extends BaseRecordProcessor<SensorsSnapshotAvro> 
     private final SnapshotHandler snapshotHandler;
 
     @Value("${telemetry.analyzer.kafka.bootstrap-servers}")
-    private String bootstrapServers =  "localhost:9092";
+    private String bootstrapServers;
 
-    @Value("${telemetry.analyzer.kafka.group-id}")
-    private String consumerGroupId = "analyzer";
+    @Value("${telemetry.analyzer.kafka.consumer.snapshots.group}")
+    private String consumerGroupId;
 
-    @Value("${telemetry.analyzer.kafka.topic.snapshots}")
-    private String topic = "telemetry.snapshots.v1";
+    @Value("${telemetry.analyzer.kafka.consumer.snapshots.topic}")
+    private String topic;
 
     @Override
     protected void configureConsumer(Properties config) {
@@ -32,6 +34,7 @@ public class SnapshotProcessor extends BaseRecordProcessor<SensorsSnapshotAvro> 
         config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getCanonicalName());
         config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SensorSnapshotDeserializer.class.getCanonicalName());
+        config.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
     }
 
     @Override
@@ -39,8 +42,15 @@ public class SnapshotProcessor extends BaseRecordProcessor<SensorsSnapshotAvro> 
         return List.of(topic);
     }
 
-    @Override
-    protected void handleRecord(SensorsSnapshotAvro record) {
-        snapshotHandler.handleSnapshot(record);
+    protected void handleRecords(ConsumerRecords<String, SensorsSnapshotAvro> records) {
+        if (records.isEmpty()) {
+            return;
+        }
+
+        for (ConsumerRecord<String, SensorsSnapshotAvro> record : records) {
+            snapshotHandler.handleSnapshot(record.value());
+        }
+
+        this.getConsumer().commitSync();
     }
 }
