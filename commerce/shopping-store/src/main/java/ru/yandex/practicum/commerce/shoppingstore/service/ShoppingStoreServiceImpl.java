@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.commerce.dto.ProductCategory;
 import ru.yandex.practicum.commerce.dto.ProductDto;
+import ru.yandex.practicum.commerce.dto.ProductState;
 import ru.yandex.practicum.commerce.dto.UpdateProductQuantityRequest;
 import ru.yandex.practicum.commerce.shoppingstore.mapper.ProductMapper;
 import ru.yandex.practicum.commerce.shoppingstore.model.Product;
@@ -32,39 +33,45 @@ public class ShoppingStoreServiceImpl implements ShoppingStoreService {
     }
 
     @Override
-    public Optional<ProductDto> getProduct(String productId) {
-        UUID id = UUID.fromString(productId);
-        return shoppingStoreRepository.findById(id)
+    public Optional<ProductDto> getProduct(UUID productId) {
+        return shoppingStoreRepository.findByIdAndState(productId, ProductState.ACTIVE)
                 .map(productMapper::toDto);
     }
 
     @Override
     public Page<ProductDto> findProducts(ProductCategory category, Pageable pageable) {
-        return shoppingStoreRepository.findByProductCategory(category, pageable)
+        return shoppingStoreRepository.findByProductCategoryAndState(category, ProductState.ACTIVE, pageable)
                 .map(productMapper::toDto);
     }
 
     @Override
     @Transactional
     public ProductDto updateProduct(ProductDto productDto) {
-        Product product = productMapper.toEntity(productDto);
-        Product updatedProduct = shoppingStoreRepository.save(product);
+        if (!shoppingStoreRepository.existsByIdAndState(productDto.getProductId(), ProductState.ACTIVE)) {
+            throw new IllegalArgumentException("Not found");
+        }
+
+        Product updatedProduct = shoppingStoreRepository.save(productMapper.toEntity(productDto));
         return productMapper.toDto(updatedProduct);
     }
 
     @Override
     @Transactional
-    public void deleteProduct(String productId) {
-        UUID id = UUID.fromString(productId);
-        shoppingStoreRepository.deleteById(id);
+    public void deleteProduct(UUID productId) {
+        Product currentProduct = shoppingStoreRepository.findByIdAndState(productId, ProductState.ACTIVE)
+                .orElseThrow(() -> new IllegalArgumentException("Not found"));
+
+        currentProduct.setProductState(ProductState.DEACTIVATE);
+        shoppingStoreRepository.save(currentProduct);
     }
 
     @Override
     @Transactional
     public void updateProductQuantity(UpdateProductQuantityRequest request) {
-        Product product = shoppingStoreRepository.findById(request.getProductId())
+        Product product = shoppingStoreRepository.findByIdAndState(request.getProductId(),  ProductState.ACTIVE)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Product not found with id: " + request.getProductId()));
+
         product.setQuantityState(request.getQuantityState());
         shoppingStoreRepository.save(product);
     }

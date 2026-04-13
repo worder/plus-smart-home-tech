@@ -18,22 +18,22 @@ import java.util.UUID;
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    UUID productId;
+    private UUID productId;
 
-    String productName;
+    private String productName;
 
-    String description;
+    private String description;
 
-    String imageSrc;
-
-    @Enumerated(EnumType.STRING)
-    QuantityState quantityState;
+    private String imageSrc;
 
     @Enumerated(EnumType.STRING)
-    ProductState productState;
+    private QuantityState quantityState;
 
     @Enumerated(EnumType.STRING)
-    ProductCategory productCategory;
+    private ProductState productState;
 
-    double price;
+    @Enumerated(EnumType.STRING)
+    private ProductCategory productCategory;
+
+    private double price;
 }

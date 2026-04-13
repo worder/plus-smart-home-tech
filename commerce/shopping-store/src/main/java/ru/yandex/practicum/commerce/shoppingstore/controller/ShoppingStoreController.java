@@ -12,6 +12,7 @@ import ru.yandex.practicum.commerce.dto.UpdateProductQuantityRequest;
 import ru.yandex.practicum.commerce.shoppingstore.service.ShoppingStoreService;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/shopping-store")
@@ -36,7 +37,7 @@ public class ShoppingStoreController {
     }
 
     @PostMapping("/removeProductFromStore")
-    public boolean deleteProduct(@RequestBody @NotBlank String productId) {
+    public boolean deleteProduct(@RequestBody @NotBlank UUID productId) {
         shoppingStoreService.deleteProduct(productId);
         return true;
     }
@@ -48,7 +49,7 @@ public class ShoppingStoreController {
     }
 
     @GetMapping("/{productId}")
-    public Optional<ProductDto> getProduct(@PathVariable String productId) {
+    public Optional<ProductDto> getProduct(@PathVariable UUID productId) {
         return shoppingStoreService.getProduct(productId);
     }
 }
