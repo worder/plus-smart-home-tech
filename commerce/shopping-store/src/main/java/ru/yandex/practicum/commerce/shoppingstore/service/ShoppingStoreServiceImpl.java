@@ -34,20 +34,20 @@ public class ShoppingStoreServiceImpl implements ShoppingStoreService {
 
     @Override
     public Optional<ProductDto> getProduct(UUID productId) {
-        return shoppingStoreRepository.findByIdAndState(productId, ProductState.ACTIVE)
+        return shoppingStoreRepository.findByProductId(productId)
                 .map(productMapper::toDto);
     }
 
     @Override
     public Page<ProductDto> findProducts(ProductCategory category, Pageable pageable) {
-        return shoppingStoreRepository.findByProductCategoryAndState(category, ProductState.ACTIVE, pageable)
+        return shoppingStoreRepository.findByProductCategory(category, pageable)
                 .map(productMapper::toDto);
     }
 
     @Override
     @Transactional
     public ProductDto updateProduct(ProductDto productDto) {
-        if (!shoppingStoreRepository.existsByIdAndState(productDto.getProductId(), ProductState.ACTIVE)) {
+        if (!shoppingStoreRepository.existsByProductIdAndProductState(productDto.getProductId(), ProductState.ACTIVE)) {
             throw new IllegalArgumentException("Not found");
         }
 
@@ -58,7 +58,7 @@ public class ShoppingStoreServiceImpl implements ShoppingStoreService {
     @Override
     @Transactional
     public void deleteProduct(UUID productId) {
-        Product currentProduct = shoppingStoreRepository.findByIdAndState(productId, ProductState.ACTIVE)
+        Product currentProduct = shoppingStoreRepository.findByProductId(productId)
                 .orElseThrow(() -> new IllegalArgumentException("Not found"));
 
         currentProduct.setProductState(ProductState.DEACTIVATE);
@@ -68,7 +68,7 @@ public class ShoppingStoreServiceImpl implements ShoppingStoreService {
     @Override
     @Transactional
     public void updateProductQuantity(UpdateProductQuantityRequest request) {
-        Product product = shoppingStoreRepository.findByIdAndState(request.getProductId(),  ProductState.ACTIVE)
+        Product product = shoppingStoreRepository.findByProductId(request.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Product not found with id: " + request.getProductId()));
 

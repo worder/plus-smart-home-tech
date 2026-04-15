@@ -51,7 +51,7 @@ public class WarehouseServiceImpl implements WarehouseService {
     public BookedProductsDto checkBookedProducts(ShoppingCartDto shoppingCartDto) {
         Set<UUID> productIds = shoppingCartDto.getProducts().keySet();
 
-        Map<UUID, WarehouseProduct> products = repository.findAllByProductId(productIds)
+        Map<UUID, WarehouseProduct> products = repository.findAllByProductIdIn(productIds)
                 .stream()
                 .collect(Collectors.toMap(WarehouseProduct::getProductId, p -> p));
 

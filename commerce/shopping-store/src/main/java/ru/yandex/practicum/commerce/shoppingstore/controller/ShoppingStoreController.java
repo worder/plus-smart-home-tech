@@ -1,7 +1,7 @@
 package ru.yandex.practicum.commerce.shoppingstore.controller;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,7 +36,7 @@ public class ShoppingStoreController {
     }
 
     @PostMapping("/removeProductFromStore")
-    public boolean deleteProduct(@RequestBody @NotBlank UUID productId) {
+    public boolean deleteProduct(@RequestBody @NotNull UUID productId) {
         shoppingStoreService.deleteProduct(productId);
         return true;
     }

@@ -12,11 +12,9 @@ import java.util.UUID;
 public interface ShoppingStoreRepository {
     Product save(Product product);
 
-    boolean existsByIdAndState(UUID productId, ProductState state);
+    boolean existsByProductIdAndProductState(UUID productId, ProductState state);
 
-    Optional<Product> findByIdAndState(UUID productId, ProductState state);
+    Optional<Product> findByProductId(UUID productId);
 
-    Page<Product> findByProductCategoryAndState(ProductCategory category, ProductState state, Pageable pageable);
-
-    void deleteById(UUID productId);
+    Page<Product> findByProductCategory(ProductCategory category, Pageable pageable);
 }

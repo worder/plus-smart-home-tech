@@ -24,7 +24,7 @@ public class ShoppingCartController {
     final private ShoppingCartService shoppingCartService;
 
     @GetMapping
-    public Optional<ShoppingCartDto> getShoppingCart(@RequestParam String username) {
+    public ShoppingCartDto getShoppingCart(@RequestParam String username) {
         return shoppingCartService.getShoppingCart(username);
     }
 
