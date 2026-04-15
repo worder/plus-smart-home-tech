@@ -1,8 +1,7 @@
 package ru.yandex.practicum.commerce.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
+import jakarta.validation.constraints.Positive;
 import lombok.Builder;
 import lombok.Value;
 
@@ -10,11 +9,15 @@ import java.util.UUID;
 
 @Value
 @Builder
-@AllArgsConstructor
-public class UpdateProductQuantityRequest {
-    @NotBlank
+public class NewProductInWarehouseRequest {
+    @NotNull
     UUID productId;
 
+    Boolean fragile;
+
     @NotNull
-    QuantityState quantityState;
+    ProductDimensionDto dimension;
+
+    @Positive
+    Double weight;
 }

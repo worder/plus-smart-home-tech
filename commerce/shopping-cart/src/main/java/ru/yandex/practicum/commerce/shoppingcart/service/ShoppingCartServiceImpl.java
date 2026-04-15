@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.commerce.dto.ChangeProductQuantityRequest;
 import ru.yandex.practicum.commerce.dto.ShoppingCartDto;
 import ru.yandex.practicum.commerce.dto.ShoppingCartState;
+import ru.yandex.practicum.commerce.feign.WarehouseClient;
 import ru.yandex.practicum.commerce.shoppingcart.mapper.ShoppingCartMapper;
 import ru.yandex.practicum.commerce.shoppingcart.model.ShoppingCart;
 import ru.yandex.practicum.commerce.shoppingcart.repository.ShoppingCartRepository;
@@ -17,6 +18,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final ShoppingCartRepository shoppingCartRepository;
+    private final WarehouseClient warehouseClient;
 
     @Override
     public ShoppingCartDto getShoppingCart(String username) {
@@ -37,6 +39,9 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         ShoppingCart cart = this.getOrCreateShoppingCart(username);
 
         cart.getProducts().putAll(products);
+
+        warehouseClient.checkBookedProducts(ShoppingCartMapper.toDto(cart));
+
         shoppingCartRepository.save(cart);
         return ShoppingCartMapper.toDto(cart);
     }
