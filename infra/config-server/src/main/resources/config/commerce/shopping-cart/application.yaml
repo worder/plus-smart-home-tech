@@ -9,7 +9,7 @@ spring:
     init:
       mode: always
   datasource:
-    url: jdbc:postgresql://localhost:5434/store
+    url: jdbc:postgresql://localhost:5433/cart
     driverClassName: org.postgresql.Driver
-    username: store
-    password: store
+    username: cart
+    password: cart

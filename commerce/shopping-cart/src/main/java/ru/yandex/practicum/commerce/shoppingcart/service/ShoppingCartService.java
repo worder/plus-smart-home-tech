@@ -5,11 +5,10 @@ import ru.yandex.practicum.commerce.dto.ShoppingCartDto;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 public interface ShoppingCartService {
-    Optional<ShoppingCartDto> getShoppingCart(String username);
+    ShoppingCartDto getShoppingCart(String username);
 
     void deactivateCart(String username);
 
