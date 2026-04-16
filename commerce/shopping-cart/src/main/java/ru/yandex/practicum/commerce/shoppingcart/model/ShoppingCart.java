@@ -11,6 +11,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Builder(toBuilder = true)
 @Entity
 @Table(name = "shopping_carts")
@@ -21,6 +22,7 @@ public class ShoppingCart {
 
     private String username;
 
+    @Enumerated(EnumType.STRING)
     private ShoppingCartState state;
 
     @ElementCollection

@@ -1,9 +1,11 @@
+drop table warehouse_product;
+
 CREATE TABLE IF NOT EXISTS warehouse_product (
     product_id UUID PRIMARY KEY,
     quantity INTEGER,
     fragile BOOLEAN,
     weight DOUBLE PRECISION,
     width DOUBLE PRECISION,
-    length DOUBLE PRECISION,
+    height DOUBLE PRECISION,
     depth DOUBLE PRECISION
 );

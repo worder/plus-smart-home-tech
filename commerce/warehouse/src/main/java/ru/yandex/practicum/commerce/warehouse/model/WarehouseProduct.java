@@ -10,22 +10,22 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
+@ToString
 @Entity
-@Table(name = "warehous_product")
+@Table(name = "warehouse_product")
 public class WarehouseProduct {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID productId;
 
     private Integer quantity;
 
     private Boolean fragile = false;
 
-    private Double weight;
+    private Double depth;
+
+    private Double height;
 
     private Double width;
 
-    private Double length;
-
-    private Double depth;
+    private Double weight;
 }

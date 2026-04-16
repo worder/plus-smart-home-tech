@@ -10,7 +10,7 @@ public class WarehouseProductMapper {
                 .fragile(request.getFragile())
                 .weight(request.getWeight())
                 .width(request.getDimension().getWidth())
-                .length(request.getDimension().getLength())
+                .height(request.getDimension().getHeight())
                 .depth(request.getDimension().getDepth())
                 .build();
     }

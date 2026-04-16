@@ -21,22 +21,22 @@ public class ShoppingStoreController {
     private final ShoppingStoreService shoppingStoreService;
 
     @GetMapping
-    public Page<ProductDto> getProducts(@RequestParam ProductCategory category, Pageable pageable) {
+    public Page<ProductDto> getProducts(@Valid @RequestParam ProductCategory category, Pageable pageable) {
         return shoppingStoreService.findProducts(category, pageable);
     }
 
     @PutMapping
-    public ProductDto addProduct(@RequestBody @Valid ProductDto productDto) {
+    public ProductDto addProduct(@Valid @RequestBody ProductDto productDto) {
         return shoppingStoreService.addProduct(productDto);
     }
 
     @PostMapping
-    public ProductDto updateProduct(@RequestBody @Valid ProductDto productDto) {
+    public ProductDto updateProduct(@Valid @RequestBody ProductDto productDto) {
         return  shoppingStoreService.updateProduct(productDto);
     }
 
     @PostMapping("/removeProductFromStore")
-    public boolean deleteProduct(@RequestBody @NotNull UUID productId) {
+    public boolean deleteProduct(@Valid @RequestBody @NotNull UUID productId) {
         shoppingStoreService.deleteProduct(productId);
         return true;
     }

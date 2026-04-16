@@ -20,16 +20,16 @@ public interface ShoppingStoreClient {
     public Page<ProductDto> getProducts(@RequestParam ProductCategory category, Pageable pageable);
 
     @PutMapping
-    public ProductDto addProduct(@RequestBody @Valid ProductDto productDto);
+    public ProductDto addProduct(@RequestBody ProductDto productDto);
 
     @PostMapping
-    public ProductDto updateProduct(@RequestBody @Valid ProductDto productDto);
+    public ProductDto updateProduct(@RequestBody ProductDto productDto);
 
     @PostMapping("/removeProductFromStore")
     public boolean deleteProduct(@RequestBody @NotBlank UUID productId);
 
     @PostMapping("/quantityState")
-    public boolean updateQuantity(@Valid UpdateProductQuantityRequest request);
+    public boolean updateQuantity(UpdateProductQuantityRequest request);
 
     @GetMapping("/{productId}")
     public Optional<ProductDto> getProduct(@PathVariable UUID productId);
