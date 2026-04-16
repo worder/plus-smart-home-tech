@@ -11,7 +11,7 @@ public class ProductDimensionDto {
     Double width;
 
     @Positive
-    Double length;
+    Double height;
 
     @Positive
     Double depth;

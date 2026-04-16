@@ -1,5 +1,6 @@
 package ru.yandex.practicum.commerce.dto;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Builder;
@@ -15,7 +16,7 @@ public class NewProductInWarehouseRequest {
 
     Boolean fragile;
 
-    @NotNull
+    @NotNull @Valid
     ProductDimensionDto dimension;
 
     @Positive

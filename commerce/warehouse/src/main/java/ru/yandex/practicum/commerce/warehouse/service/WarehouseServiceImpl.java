@@ -1,9 +1,9 @@
 package ru.yandex.practicum.commerce.warehouse.service;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.commerce.dto.*;
-import ru.yandex.practicum.commerce.feign.ShoppingStoreClient;
 import ru.yandex.practicum.commerce.warehouse.mapper.WarehouseProductMapper;
 import ru.yandex.practicum.commerce.warehouse.model.WarehouseProduct;
 import ru.yandex.practicum.commerce.warehouse.repository.WarehouseProductRepository;
@@ -15,11 +15,11 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class WarehouseServiceImpl implements WarehouseService {
     private final WarehouseProductRepository repository;
-    private final ShoppingStoreClient shoppingStoreClient;
 
     private static final String[] ADDRESSES =
             new String[] {"ADDRESS_1", "ADDRESS_2"};
@@ -43,17 +43,18 @@ public class WarehouseServiceImpl implements WarehouseService {
                         "Product with id " + request.getProductId() + " does not exists"));
         product.setQuantity(request.getQuantity() + request.getQuantity());
         repository.save(product);
-
-        updateStoreQuantity(product.getProductId(), product.getQuantity());
     }
 
     @Override
     public BookedProductsDto checkBookedProducts(ShoppingCartDto shoppingCartDto) {
         Set<UUID> productIds = shoppingCartDto.getProducts().keySet();
+        log.info("> checking booked products for cart {}", shoppingCartDto);
 
         Map<UUID, WarehouseProduct> products = repository.findAllByProductIdIn(productIds)
                 .stream()
                 .collect(Collectors.toMap(WarehouseProduct::getProductId, p -> p));
+
+        log.info("> found products: {}", products.values());
 
         for (Map.Entry<UUID, Integer> entry : shoppingCartDto.getProducts().entrySet()) {
             UUID productId = entry.getKey();
@@ -74,7 +75,7 @@ public class WarehouseServiceImpl implements WarehouseService {
 
         Double totalVolume = products.values().stream()
                 .reduce(0.0, (sum, p) ->
-                        sum + (p.getWidth() * p.getDepth() * p.getLength() * p.getQuantity()), Double::sum);
+                        sum + (p.getWidth() * p.getDepth() * p.getHeight() * p.getQuantity()), Double::sum);
 
         Boolean fragile = products.values().stream().anyMatch(WarehouseProduct::getFragile);
 
@@ -94,20 +95,5 @@ public class WarehouseServiceImpl implements WarehouseService {
                 .house(CURRENT_ADDRESS)
                 .flat(CURRENT_ADDRESS)
                 .build();
-    }
-
-    private void updateStoreQuantity(UUID productId, Integer quantity) {
-        QuantityState quantityState;
-        if (quantity == 0) {
-            quantityState = QuantityState.ENDED;
-        } else if (quantity < 10) {
-            quantityState = QuantityState.ENOUGH;
-        } else if (quantity < 100) {
-            quantityState = QuantityState.FEW;
-        } else {
-            quantityState = QuantityState.MANY;
-        }
-
-        shoppingStoreClient.updateQuantity(new UpdateProductQuantityRequest(productId, quantityState));
     }
 }
