@@ -8,7 +8,5 @@ import java.util.Optional;
 public interface ShoppingCartRepository {
     Optional<ShoppingCart> findByUsernameAndState(String username, ShoppingCartState state);
 
-    Optional<ShoppingCart> findByUsername(String username);
-
     ShoppingCart save(ShoppingCart shoppingCart);
 }

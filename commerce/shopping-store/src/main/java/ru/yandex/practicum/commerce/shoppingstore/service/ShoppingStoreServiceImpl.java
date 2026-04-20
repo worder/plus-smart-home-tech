@@ -9,11 +9,11 @@ import ru.yandex.practicum.commerce.dto.ProductCategory;
 import ru.yandex.practicum.commerce.dto.ProductDto;
 import ru.yandex.practicum.commerce.dto.ProductState;
 import ru.yandex.practicum.commerce.dto.UpdateProductQuantityRequest;
+import ru.yandex.practicum.commerce.error.ItemNotFoundException;
 import ru.yandex.practicum.commerce.shoppingstore.mapper.ProductMapper;
 import ru.yandex.practicum.commerce.shoppingstore.model.Product;
 import ru.yandex.practicum.commerce.shoppingstore.repository.ShoppingStoreRepository;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -33,9 +33,10 @@ public class ShoppingStoreServiceImpl implements ShoppingStoreService {
     }
 
     @Override
-    public Optional<ProductDto> getProduct(UUID productId) {
+    public ProductDto getProduct(UUID productId) {
         return shoppingStoreRepository.findByProductId(productId)
-                .map(productMapper::toDto);
+                .map(productMapper::toDto)
+                .orElseThrow(() -> new ItemNotFoundException("Product not found with id: " + productId));
     }
 
     @Override
@@ -47,8 +48,8 @@ public class ShoppingStoreServiceImpl implements ShoppingStoreService {
     @Override
     @Transactional
     public ProductDto updateProduct(ProductDto productDto) {
-        if (!shoppingStoreRepository.existsByProductIdAndProductState(productDto.getProductId(), ProductState.ACTIVE)) {
-            throw new IllegalArgumentException("Not found");
+        if (!shoppingStoreRepository.existsByProductId(productDto.getProductId())) {
+            throw new ItemNotFoundException("Product not found with id: " + productDto.getProductId());
         }
 
         Product updatedProduct = shoppingStoreRepository.save(productMapper.toEntity(productDto));
@@ -59,7 +60,7 @@ public class ShoppingStoreServiceImpl implements ShoppingStoreService {
     @Transactional
     public void deleteProduct(UUID productId) {
         Product currentProduct = shoppingStoreRepository.findByProductId(productId)
-                .orElseThrow(() -> new IllegalArgumentException("Not found"));
+                .orElseThrow(() -> new ItemNotFoundException("Product not found with id: " + productId));
 
         currentProduct.setProductState(ProductState.DEACTIVATE);
         shoppingStoreRepository.save(currentProduct);
@@ -69,7 +70,7 @@ public class ShoppingStoreServiceImpl implements ShoppingStoreService {
     @Transactional
     public void updateProductQuantity(UpdateProductQuantityRequest request) {
         Product product = shoppingStoreRepository.findByProductId(request.getProductId())
-                .orElseThrow(() -> new IllegalArgumentException(
+                .orElseThrow(() -> new ItemNotFoundException(
                         "Product not found with id: " + request.getProductId()));
 
         product.setQuantityState(request.getQuantityState());

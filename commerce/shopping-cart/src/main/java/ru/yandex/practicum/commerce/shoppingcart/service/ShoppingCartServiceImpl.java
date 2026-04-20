@@ -7,6 +7,7 @@ import ru.yandex.practicum.commerce.dto.BookedProductsDto;
 import ru.yandex.practicum.commerce.dto.ChangeProductQuantityRequest;
 import ru.yandex.practicum.commerce.dto.ShoppingCartDto;
 import ru.yandex.practicum.commerce.dto.ShoppingCartState;
+import ru.yandex.practicum.commerce.error.ItemNotFoundException;
 import ru.yandex.practicum.commerce.feign.WarehouseClient;
 import ru.yandex.practicum.commerce.shoppingcart.mapper.ShoppingCartMapper;
 import ru.yandex.practicum.commerce.shoppingcart.model.ShoppingCart;
@@ -34,8 +35,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Override
     public void deactivateCart(String username) {
-        ShoppingCart cart = shoppingCartRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("ShoppingCart not found"));
+        ShoppingCart cart = shoppingCartRepository.findByUsernameAndState(username, ShoppingCartState.ACTIVE)
+                .orElseThrow(() -> new ItemNotFoundException("ShoppingCart not found"));
 
         log.info("> deactivating cart {}; for username {}", cart, username);
         cart.setState(ShoppingCartState.DEACTIVATE);
@@ -83,7 +84,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             return ShoppingCartMapper.toDto(cart);
         }
 
-        throw new IllegalArgumentException("Product not found");
+        throw new ItemNotFoundException("Product not found");
     }
 
     private ShoppingCart getOrCreateShoppingCart(String username) {

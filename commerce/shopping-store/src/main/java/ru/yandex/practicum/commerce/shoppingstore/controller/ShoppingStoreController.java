@@ -48,7 +48,7 @@ public class ShoppingStoreController {
     }
 
     @GetMapping("/{productId}")
-    public Optional<ProductDto> getProduct(@PathVariable UUID productId) {
+    public ProductDto getProduct(@PathVariable UUID productId) {
         return shoppingStoreService.getProduct(productId);
     }
 }

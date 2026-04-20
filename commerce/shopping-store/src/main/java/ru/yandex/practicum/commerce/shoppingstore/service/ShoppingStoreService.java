@@ -12,7 +12,7 @@ import java.util.UUID;
 public interface ShoppingStoreService {
     ProductDto addProduct(ProductDto productDto);
 
-    Optional<ProductDto> getProduct(UUID productId);
+    ProductDto getProduct(UUID productId);
 
     Page<ProductDto> findProducts(ProductCategory category, Pageable pageable);
 

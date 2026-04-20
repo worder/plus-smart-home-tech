@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.commerce.dto.*;
+import ru.yandex.practicum.commerce.error.ItemOutOfStockException;
+import ru.yandex.practicum.commerce.error.ItemExistsException;
+import ru.yandex.practicum.commerce.error.ItemNotFoundException;
 import ru.yandex.practicum.commerce.warehouse.mapper.WarehouseProductMapper;
 import ru.yandex.practicum.commerce.warehouse.model.WarehouseProduct;
 import ru.yandex.practicum.commerce.warehouse.repository.WarehouseProductRepository;
@@ -31,7 +34,7 @@ public class WarehouseServiceImpl implements WarehouseService {
     @Override
     public void putNewProduct(NewProductInWarehouseRequest request) {
         if (repository.existsByProductId(request.getProductId())) {
-            throw new IllegalArgumentException("Product with id " + request.getProductId() + " already exists");
+            throw new ItemExistsException("Product with id " + request.getProductId() + " already exists");
         }
         repository.save(WarehouseProductMapper.toWarehouseProductEntity(request));
     }
@@ -39,7 +42,7 @@ public class WarehouseServiceImpl implements WarehouseService {
     @Override
     public void addProduct(AddProductToWarehouseRequest request) {
         WarehouseProduct product = repository.findByProductId(request.getProductId())
-                .orElseThrow(() -> new IllegalArgumentException(
+                .orElseThrow(() -> new ItemNotFoundException(
                         "Product with id " + request.getProductId() + " does not exists"));
         product.setQuantity(request.getQuantity() + request.getQuantity());
         repository.save(product);
@@ -62,10 +65,10 @@ public class WarehouseServiceImpl implements WarehouseService {
             WarehouseProduct warehouseProduct = products.get(productId);
 
             if (!products.containsKey(productId)) {
-                throw new IllegalArgumentException("Product with id " + productId + " does not exists");
+                throw new ItemNotFoundException("Product with id " + productId + " does not exists");
             }
             if (warehouseProduct.getQuantity() < requiredQuantity) {
-                throw new IllegalArgumentException("Product with id " + productId + " has less than required quantity");
+                throw new ItemOutOfStockException("Product with id " + productId + " has less than required quantity");
             }
         }
 
