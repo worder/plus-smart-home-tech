@@ -1,5 +1,3 @@
-drop table warehouse_product;
-
 CREATE TABLE IF NOT EXISTS warehouse_product (
     product_id UUID PRIMARY KEY,
     quantity INTEGER,
