@@ -11,7 +11,6 @@ import ru.yandex.practicum.commerce.dto.ProductDto;
 import ru.yandex.practicum.commerce.dto.UpdateProductQuantityRequest;
 import ru.yandex.practicum.commerce.shoppingstore.service.ShoppingStoreService;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController

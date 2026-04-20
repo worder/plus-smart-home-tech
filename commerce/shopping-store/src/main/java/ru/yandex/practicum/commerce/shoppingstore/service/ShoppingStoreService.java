@@ -6,7 +6,6 @@ import ru.yandex.practicum.commerce.dto.ProductCategory;
 import ru.yandex.practicum.commerce.dto.ProductDto;
 import ru.yandex.practicum.commerce.dto.UpdateProductQuantityRequest;
 
-import java.util.Optional;
 import java.util.UUID;
 
 public interface ShoppingStoreService {

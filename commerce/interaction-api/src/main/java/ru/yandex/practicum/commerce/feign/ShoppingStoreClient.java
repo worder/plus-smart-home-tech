@@ -1,6 +1,5 @@
 package ru.yandex.practicum.commerce.feign;
 
-
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Page;

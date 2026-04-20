@@ -28,7 +28,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     public ShoppingCartDto getShoppingCart(String username) {
         log.info("> get shopping cart for {}", username);
-        ShoppingCart cart =  getOrCreateShoppingCart(username);
+        ShoppingCart cart = getOrCreateShoppingCart(username);
         log.info("> returning cart {}", cart);
         return ShoppingCartMapper.toDto(cart);
     }
@@ -90,7 +90,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private ShoppingCart getOrCreateShoppingCart(String username) {
         return shoppingCartRepository.findByUsernameAndState(username, ShoppingCartState.ACTIVE)
                 .orElseGet(() -> {
-                    log.info("> shopping card not found for user {}, creating new",  username);
+                    log.info("> shopping card not found for user {}, creating new", username);
                     ShoppingCart newCart = ShoppingCart.builder()
                             .username(username)
                             .state(ShoppingCartState.ACTIVE)
