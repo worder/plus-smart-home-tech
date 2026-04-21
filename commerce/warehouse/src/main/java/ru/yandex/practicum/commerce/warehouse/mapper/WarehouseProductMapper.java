@@ -1,8 +1,10 @@
 package ru.yandex.practicum.commerce.warehouse.mapper;
 
+import lombok.experimental.UtilityClass;
 import ru.yandex.practicum.commerce.dto.NewProductInWarehouseRequest;
 import ru.yandex.practicum.commerce.warehouse.model.WarehouseProduct;
 
+@UtilityClass
 public class WarehouseProductMapper {
     public static WarehouseProduct toWarehouseProductEntity(NewProductInWarehouseRequest request) {
         return WarehouseProduct.builder()

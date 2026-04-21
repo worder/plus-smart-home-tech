@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.commerce.dto.ProductCategory;
 import ru.yandex.practicum.commerce.dto.ProductDto;
@@ -13,6 +14,7 @@ import ru.yandex.practicum.commerce.shoppingstore.service.ShoppingStoreService;
 
 import java.util.UUID;
 
+@Validated
 @RestController
 @RequestMapping("/api/v1/shopping-store")
 @AllArgsConstructor

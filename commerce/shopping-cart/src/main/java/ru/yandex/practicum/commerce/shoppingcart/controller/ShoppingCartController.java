@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.commerce.dto.ChangeProductQuantityRequest;
 import ru.yandex.practicum.commerce.dto.ShoppingCartDto;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+@Validated
 @RestController
 @RequestMapping("/api/v1/shopping-cart")
 @AllArgsConstructor
@@ -22,7 +24,7 @@ public class ShoppingCartController {
     final private ShoppingCartService shoppingCartService;
 
     @GetMapping
-    public ShoppingCartDto getShoppingCart(@Valid @RequestParam String username) {
+    public ShoppingCartDto getShoppingCart(@Valid @RequestParam @NotBlank String username) {
         return shoppingCartService.getShoppingCart(username);
     }
 

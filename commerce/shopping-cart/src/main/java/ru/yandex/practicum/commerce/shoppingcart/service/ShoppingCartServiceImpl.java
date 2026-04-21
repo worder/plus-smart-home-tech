@@ -3,6 +3,7 @@ package ru.yandex.practicum.commerce.shoppingcart.service;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.commerce.dto.BookedProductsDto;
 import ru.yandex.practicum.commerce.dto.ChangeProductQuantityRequest;
 import ru.yandex.practicum.commerce.dto.ShoppingCartDto;
@@ -33,6 +34,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return ShoppingCartMapper.toDto(cart);
     }
 
+
+    @Transactional
     @Override
     public void deactivateCart(String username) {
         ShoppingCart cart = shoppingCartRepository.findByUsernameAndState(username, ShoppingCartState.ACTIVE)
@@ -56,6 +59,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return ShoppingCartMapper.toDto(updatedCart);
     }
 
+    @Transactional
     @Override
     public ShoppingCartDto removeProducts(String username, List<UUID> products) {
         ShoppingCart cart = this.getOrCreateShoppingCart(username);
@@ -73,6 +77,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return ShoppingCartMapper.toDto(cart);
     }
 
+    @Transactional
     @Override
     public ShoppingCartDto changeProductQuantity(String username, ChangeProductQuantityRequest request) {
         ShoppingCart cart = this.getOrCreateShoppingCart(username);

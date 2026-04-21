@@ -22,27 +22,26 @@ import java.util.UUID;
 public class ShoppingStoreServiceImpl implements ShoppingStoreService {
 
     private final ShoppingStoreRepository shoppingStoreRepository;
-    private final ProductMapper productMapper;
 
     @Override
     @Transactional
     public ProductDto addProduct(ProductDto productDto) {
-        Product product = productMapper.toEntity(productDto);
+        Product product = ProductMapper.toEntity(productDto);
         Product savedProduct = shoppingStoreRepository.save(product);
-        return productMapper.toDto(savedProduct);
+        return ProductMapper.toDto(savedProduct);
     }
 
     @Override
     public ProductDto getProduct(UUID productId) {
         return shoppingStoreRepository.findByProductId(productId)
-                .map(productMapper::toDto)
+                .map(ProductMapper::toDto)
                 .orElseThrow(() -> new ItemNotFoundException("Product not found with id: " + productId));
     }
 
     @Override
     public Page<ProductDto> findProducts(ProductCategory category, Pageable pageable) {
         return shoppingStoreRepository.findByProductCategory(category, pageable)
-                .map(productMapper::toDto);
+                .map(ProductMapper::toDto);
     }
 
     @Override
@@ -52,8 +51,8 @@ public class ShoppingStoreServiceImpl implements ShoppingStoreService {
             throw new ItemNotFoundException("Product not found with id: " + productDto.getProductId());
         }
 
-        Product updatedProduct = shoppingStoreRepository.save(productMapper.toEntity(productDto));
-        return productMapper.toDto(updatedProduct);
+        Product updatedProduct = shoppingStoreRepository.save(ProductMapper.toEntity(productDto));
+        return ProductMapper.toDto(updatedProduct);
     }
 
     @Override
