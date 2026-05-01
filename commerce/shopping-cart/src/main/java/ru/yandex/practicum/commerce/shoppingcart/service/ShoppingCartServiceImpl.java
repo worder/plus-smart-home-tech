@@ -3,10 +3,11 @@ package ru.yandex.practicum.commerce.shoppingcart.service;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.commerce.dto.BookedProductsDto;
-import ru.yandex.practicum.commerce.dto.request.ChangeProductQuantityRequest;
 import ru.yandex.practicum.commerce.dto.ShoppingCartDto;
 import ru.yandex.practicum.commerce.dto.enums.ShoppingCartState;
+import ru.yandex.practicum.commerce.dto.request.ChangeProductQuantityRequest;
 import ru.yandex.practicum.commerce.error.ItemNotFoundException;
 import ru.yandex.practicum.commerce.feign.WarehouseClient;
 import ru.yandex.practicum.commerce.shoppingcart.mapper.ShoppingCartMapper;
@@ -28,11 +29,13 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     public ShoppingCartDto getShoppingCart(String username) {
         log.info("> get shopping cart for {}", username);
-        ShoppingCart cart =  getOrCreateShoppingCart(username);
+        ShoppingCart cart = getOrCreateShoppingCart(username);
         log.info("> returning cart {}", cart);
         return ShoppingCartMapper.toDto(cart);
     }
 
+
+    @Transactional
     @Override
     public void deactivateCart(String username) {
         ShoppingCart cart = shoppingCartRepository.findByUsernameAndState(username, ShoppingCartState.ACTIVE)
@@ -56,6 +59,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return ShoppingCartMapper.toDto(updatedCart);
     }
 
+    @Transactional
     @Override
     public ShoppingCartDto removeProducts(String username, List<UUID> products) {
         ShoppingCart cart = this.getOrCreateShoppingCart(username);
@@ -73,6 +77,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return ShoppingCartMapper.toDto(cart);
     }
 
+    @Transactional
     @Override
     public ShoppingCartDto changeProductQuantity(String username, ChangeProductQuantityRequest request) {
         ShoppingCart cart = this.getOrCreateShoppingCart(username);
@@ -90,7 +95,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private ShoppingCart getOrCreateShoppingCart(String username) {
         return shoppingCartRepository.findByUsernameAndState(username, ShoppingCartState.ACTIVE)
                 .orElseGet(() -> {
-                    log.info("> shopping card not found for user {}, creating new",  username);
+                    log.info("> shopping card not found for user {}, creating new", username);
                     ShoppingCart newCart = ShoppingCart.builder()
                             .username(username)
                             .state(ShoppingCartState.ACTIVE)

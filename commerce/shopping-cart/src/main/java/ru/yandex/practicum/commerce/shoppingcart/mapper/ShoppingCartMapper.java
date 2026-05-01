@@ -1,10 +1,12 @@
 package ru.yandex.practicum.commerce.shoppingcart.mapper;
 
+import lombok.experimental.UtilityClass;
 import ru.yandex.practicum.commerce.dto.ShoppingCartDto;
 import ru.yandex.practicum.commerce.shoppingcart.model.ShoppingCart;
 
 import java.util.HashMap;
 
+@UtilityClass
 public class ShoppingCartMapper {
     public static ShoppingCartDto toDto(ShoppingCart shoppingCart) {
         return ShoppingCartDto.builder()

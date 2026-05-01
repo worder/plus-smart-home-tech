@@ -3,12 +3,15 @@ package ru.yandex.practicum.commerce.warehouse.service;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.commerce.dto.*;
+import org.springframework.transaction.annotation.Transactional;
+import ru.yandex.practicum.commerce.dto.AddressDto;
+import ru.yandex.practicum.commerce.dto.BookedProductsDto;
+import ru.yandex.practicum.commerce.dto.ShoppingCartDto;
 import ru.yandex.practicum.commerce.dto.request.AddProductToWarehouseRequest;
 import ru.yandex.practicum.commerce.dto.request.NewProductInWarehouseRequest;
-import ru.yandex.practicum.commerce.error.ItemOutOfStockException;
 import ru.yandex.practicum.commerce.error.ItemExistsException;
 import ru.yandex.practicum.commerce.error.ItemNotFoundException;
+import ru.yandex.practicum.commerce.error.ItemOutOfStockException;
 import ru.yandex.practicum.commerce.warehouse.mapper.WarehouseProductMapper;
 import ru.yandex.practicum.commerce.warehouse.model.WarehouseProduct;
 import ru.yandex.practicum.commerce.warehouse.repository.WarehouseProductRepository;
@@ -20,26 +23,27 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@Slf4j
-@Service
-@AllArgsConstructor
-public class WarehouseServiceImpl implements WarehouseService {
-    private final WarehouseProductRepository repository;
+    @Slf4j
+    @Service
+    @AllArgsConstructor
+    public class WarehouseServiceImpl implements WarehouseService {
+        private final WarehouseProductRepository repository;
 
-    private static final String[] ADDRESSES =
-            new String[] {"ADDRESS_1", "ADDRESS_2"};
+        private static final String[] ADDRESSES =
+                new String[] {"ADDRESS_1", "ADDRESS_2"};
 
-    private static final String CURRENT_ADDRESS =
-            ADDRESSES[Random.from(new SecureRandom()).nextInt(0, ADDRESSES.length)];
+        private static final String CURRENT_ADDRESS =
+                ADDRESSES[Random.from(new SecureRandom()).nextInt(0, ADDRESSES.length)];
 
 
-    @Override
-    public void putNewProduct(NewProductInWarehouseRequest request) {
-        if (repository.existsByProductId(request.getProductId())) {
-            throw new ItemExistsException("Product with id " + request.getProductId() + " already exists");
+        @Transactional
+        @Override
+        public void putNewProduct(NewProductInWarehouseRequest request) {
+            if (repository.existsByProductId(request.getProductId())) {
+                throw new ItemExistsException("Product with id " + request.getProductId() + " already exists");
+            }
+            repository.save(WarehouseProductMapper.toWarehouseProductEntity(request));
         }
-        repository.save(WarehouseProductMapper.toWarehouseProductEntity(request));
-    }
 
     @Override
     public void addProduct(AddProductToWarehouseRequest request) {

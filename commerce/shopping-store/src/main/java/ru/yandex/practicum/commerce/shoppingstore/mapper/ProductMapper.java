@@ -1,13 +1,13 @@
 package ru.yandex.practicum.commerce.shoppingstore.mapper;
 
-import org.springframework.stereotype.Component;
+import lombok.experimental.UtilityClass;
 import ru.yandex.practicum.commerce.dto.ProductDto;
 import ru.yandex.practicum.commerce.shoppingstore.model.Product;
 
-@Component
+@UtilityClass
 public class ProductMapper {
 
-    public ProductDto toDto(Product product) {
+    public static ProductDto toDto(Product product) {
         if (product == null) {
             return null;
         }
@@ -23,7 +23,7 @@ public class ProductMapper {
                 .build();
     }
 
-    public Product toEntity(ProductDto productDto) {
+    public static Product toEntity(ProductDto productDto) {
         if (productDto == null) {
             return null;
         }

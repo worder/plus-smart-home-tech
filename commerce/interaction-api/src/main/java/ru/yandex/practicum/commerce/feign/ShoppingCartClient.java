@@ -26,6 +26,6 @@ public interface ShoppingCartClient {
                                                    @RequestParam(required = false) List<UUID> products);
 
     @PostMapping("/change-quantity")
-    public ShoppingCartDto changeProductQuantityInUserCart(@RequestParam String username,
+    ShoppingCartDto changeProductQuantityInUserCart(@RequestParam String username,
                                                            @RequestBody ChangeProductQuantityRequest request);
 }
