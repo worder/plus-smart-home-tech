@@ -2,7 +2,7 @@ package ru.yandex.practicum.commerce.shoppingcart.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import ru.yandex.practicum.commerce.dto.ShoppingCartState;
+import ru.yandex.practicum.commerce.dto.enums.ShoppingCartState;
 
 import java.util.Map;
 import java.util.UUID;

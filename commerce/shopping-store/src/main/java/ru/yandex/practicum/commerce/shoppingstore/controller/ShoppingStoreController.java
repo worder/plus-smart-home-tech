@@ -6,12 +6,11 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.commerce.dto.ProductCategory;
+import ru.yandex.practicum.commerce.dto.enums.ProductCategory;
 import ru.yandex.practicum.commerce.dto.ProductDto;
-import ru.yandex.practicum.commerce.dto.UpdateProductQuantityRequest;
+import ru.yandex.practicum.commerce.dto.request.UpdateProductQuantityRequest;
 import ru.yandex.practicum.commerce.shoppingstore.service.ShoppingStoreService;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController

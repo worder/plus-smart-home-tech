@@ -1,7 +1,8 @@
-package ru.yandex.practicum.commerce.dto;
+package ru.yandex.practicum.commerce.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import ru.yandex.practicum.commerce.dto.enums.QuantityState;
 
 import java.util.UUID;
 

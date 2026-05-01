@@ -5,6 +5,9 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Value;
+import ru.yandex.practicum.commerce.dto.enums.ProductCategory;
+import ru.yandex.practicum.commerce.dto.enums.ProductState;
+import ru.yandex.practicum.commerce.dto.enums.QuantityState;
 
 import java.util.UUID;
 

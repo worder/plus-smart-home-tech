@@ -1,18 +1,20 @@
-package ru.yandex.practicum.commerce.dto;
+package ru.yandex.practicum.commerce.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Builder;
+import lombok.ToString;
 import lombok.Value;
 
 import java.util.UUID;
 
 @Value
 @Builder
-public class AddProductToWarehouseRequest {
+@ToString
+public class ChangeProductQuantityRequest {
     @NotNull
     UUID productId;
 
     @Positive
-    Integer quantity;
+    Integer newQuantity;
 }

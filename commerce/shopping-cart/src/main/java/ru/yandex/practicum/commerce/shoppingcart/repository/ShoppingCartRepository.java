@@ -1,6 +1,6 @@
 package ru.yandex.practicum.commerce.shoppingcart.repository;
 
-import ru.yandex.practicum.commerce.dto.ShoppingCartState;
+import ru.yandex.practicum.commerce.dto.enums.ShoppingCartState;
 import ru.yandex.practicum.commerce.shoppingcart.model.ShoppingCart;
 
 import java.util.Optional;

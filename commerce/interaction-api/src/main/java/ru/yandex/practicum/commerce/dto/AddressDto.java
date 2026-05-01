@@ -5,7 +5,7 @@ import lombok.Value;
 
 @Value
 @Builder
-public class WarehouseAddressDto {
+public class AddressDto {
     String country;
     String city;
     String street;

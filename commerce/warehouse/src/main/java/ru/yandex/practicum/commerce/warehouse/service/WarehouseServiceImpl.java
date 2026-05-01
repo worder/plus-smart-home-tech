@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.commerce.dto.*;
+import ru.yandex.practicum.commerce.dto.request.AddProductToWarehouseRequest;
+import ru.yandex.practicum.commerce.dto.request.NewProductInWarehouseRequest;
 import ru.yandex.practicum.commerce.error.ItemOutOfStockException;
 import ru.yandex.practicum.commerce.error.ItemExistsException;
 import ru.yandex.practicum.commerce.error.ItemNotFoundException;
@@ -90,8 +92,8 @@ public class WarehouseServiceImpl implements WarehouseService {
     }
 
     @Override
-    public WarehouseAddressDto getAddress() {
-        return WarehouseAddressDto.builder()
+    public AddressDto getAddress() {
+        return AddressDto.builder()
                 .country(CURRENT_ADDRESS)
                 .city(CURRENT_ADDRESS)
                 .street(CURRENT_ADDRESS)

@@ -1,4 +1,4 @@
-package ru.yandex.practicum.commerce.dto;
+package ru.yandex.practicum.commerce.dto.enums;
 
 public enum ProductState {
     ACTIVE,
