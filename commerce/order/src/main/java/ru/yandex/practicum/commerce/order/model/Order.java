@@ -14,6 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Entity
+@ToString
 @Table(name = "orders")
 public class Order {
     @Id

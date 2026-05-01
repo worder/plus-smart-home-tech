@@ -55,8 +55,8 @@ public class WarehouseController {
     }
 
     @PostMapping("/assembly")
-    public void assemblyOrder(@Valid @RequestBody AssemblyProductsForOrderRequest request) {
-        warehouseService.assemblyOrder(request);
+    BookedProductsDto assemblyOrder(@Valid @RequestBody AssemblyProductsForOrderRequest request) {
+        return warehouseService.assemblyOrder(request);
     }
 
 

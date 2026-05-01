@@ -4,6 +4,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.commerce.dto.request.CreateNewOrderRequest;
@@ -11,7 +13,6 @@ import ru.yandex.practicum.commerce.dto.OrderDto;
 import ru.yandex.practicum.commerce.dto.request.ReturnOrderRequest;
 import ru.yandex.practicum.commerce.order.service.OrderService;
 
-import java.util.Collection;
 import java.util.UUID;
 
 @RestController
@@ -22,8 +23,8 @@ public class OrderController {
     private final OrderService orderService;
 
     @GetMapping
-    public Collection<OrderDto> getOrder(@RequestParam @NotBlank String username) {
-        return orderService.findOrders(username);
+    public Page<OrderDto> getOrders(@RequestParam @NotBlank String username, Pageable pageable) {
+        return orderService.findOrders(username, pageable);
     }
 
     @PutMapping
@@ -37,8 +38,8 @@ public class OrderController {
     }
 
     @PostMapping("/payment")
-    public OrderDto payOrder(@RequestBody @NotNull UUID orderId) {
-        return orderService.payOrder(orderId);
+    public OrderDto paymentSuccess(@RequestBody @NotNull UUID orderId) {
+        return orderService.paymentSuccess(orderId);
     }
 
     @PostMapping("/payment/failed")
@@ -48,7 +49,7 @@ public class OrderController {
 
     @PostMapping("/delivery")
     public OrderDto deliverOrder(@RequestBody @NotNull UUID orderId) {
-        return orderService.delivery(orderId);
+        return orderService.deliverySuccess(orderId);
     }
 
     @PostMapping("/delivery/failed")
@@ -72,8 +73,8 @@ public class OrderController {
     }
 
     @PostMapping("/assembly")
-    public OrderDto assemblyOrder(@RequestBody @NotNull UUID orderId) {
-        return orderService.assembly(orderId);
+    public OrderDto assemblySuccess(@RequestBody @NotNull UUID orderId) {
+        return orderService.assemblySuccess(orderId);
     }
 
     @PostMapping("/assembly/failed")

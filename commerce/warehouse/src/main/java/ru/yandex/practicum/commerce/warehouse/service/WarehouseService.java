@@ -22,5 +22,5 @@ public interface WarehouseService {
 
     void returnToWarehouse(Map<UUID, Integer> products);
 
-    void assemblyOrder(AssemblyProductsForOrderRequest request);
+    BookedProductsDto assemblyOrder(AssemblyProductsForOrderRequest request);
 }
