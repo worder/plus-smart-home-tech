@@ -30,5 +30,5 @@ public interface ShoppingStoreClient {
     boolean updateQuantity(UpdateProductQuantityRequest request);
 
     @GetMapping("/{productId}")
-    Optional<ProductDto> getProduct(@PathVariable UUID productId);
+    ProductDto getProduct(@PathVariable UUID productId);
 }

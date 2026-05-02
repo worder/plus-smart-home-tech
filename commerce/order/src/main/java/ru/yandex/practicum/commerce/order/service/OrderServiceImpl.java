@@ -71,20 +71,6 @@ public class OrderServiceImpl implements OrderService {
         order = orderRepository.save(order);
         log.info("Created new order: {} from request: {}", order, request);
 
-        // initiate payment process
-        PaymentDto payment = paymentClient.payment(OrderMapper.toDto(order));
-        order.setPaymentId(payment.getPaymentId());
-        log.info("Created payment: {} for order: {}", payment.getPaymentId(), order.getOrderId());
-
-        // create delivery
-        DeliveryDto delivery = deliveryClient.planDelivery(DeliveryDto.builder()
-                .orderId(order.getOrderId())
-                .fromAddress(request.getDeliveryAddress())
-                .toAddress(warehouseClient.getWarehouseAddress())
-                .build());
-        order.setDeliveryId(delivery.getDeliveryId());
-        log.info("Created delivery: {} for order: {}", delivery.getDeliveryId(), order.getOrderId());
-
         // make booking on warehouse
         BookedProductsDto bookedProducts = warehouseClient
                 .arrangeAssemblyForOrder(AssemblyProductsForOrderRequest.builder()
@@ -98,8 +84,14 @@ public class OrderServiceImpl implements OrderService {
         order.setDeliveryWeight(bookedProducts.getDeliveryWeight());
         order.setFragile(bookedProducts.getFragile());
 
-        // calculate product cost
-        order.setProductPrice(paymentClient.productCost(OrderMapper.toDto(order)));
+        // create delivery
+        DeliveryDto delivery = deliveryClient.planDelivery(DeliveryDto.builder()
+                .orderId(order.getOrderId())
+                .fromAddress(request.getDeliveryAddress())
+                .toAddress(warehouseClient.getWarehouseAddress())
+                .build());
+        order.setDeliveryId(delivery.getDeliveryId());
+        log.info("Created delivery: {} for order: {}", delivery.getDeliveryId(), order.getOrderId());
 
         return OrderMapper.toDto(orderRepository.save(order));
     }
@@ -157,8 +149,14 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDto calculateTotalPrice(UUID orderId) {
         Order order = this.getOrder(orderId);
+        order.setProductPrice(paymentClient.productCost(OrderMapper.toDto(order)));
         order.setTotalPrice(paymentClient.getTotalCost(OrderMapper.toDto(order)));
         log.info("Calculated total price for order: {} is {}", order.getOrderId(), order.getTotalPrice());
+
+        // initiate payment process
+        PaymentDto payment = paymentClient.payment(OrderMapper.toDto(order));
+        order.setPaymentId(payment.getPaymentId());
+        log.info("Created payment: {} for order: {}", payment.getPaymentId(), order.getOrderId());
 
         return OrderMapper.toDto(orderRepository.save(order));
     }

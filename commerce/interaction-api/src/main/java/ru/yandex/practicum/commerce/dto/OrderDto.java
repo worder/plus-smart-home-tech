@@ -19,7 +19,7 @@ public class OrderDto {
     double deliveryWeight;
     double deliveryVolume;
     boolean fragile;
-    double totalPrice;
-    double deliveryPrice;
-    double productPrice;
+    Double totalPrice;
+    Double deliveryPrice;
+    Double productPrice;
 }
