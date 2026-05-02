@@ -1,46 +1,97 @@
 spring:
   cloud:
     gateway:
-      discovery.locator.enabled: true
       routes:
-        - id: shopping_cart_service_route
-          uri: lb://shopping-cart
+
+        - id: order-service
+          uri: lb://ORDER
+          predicates:
+            - Path=/order/**
+          filters:
+            - PrefixPath=/api/v1
+            - name: CircuitBreaker
+              args:
+                name: commonCircuitBreaker
+                fallbackUri: forward:/fallback
+
+        - id: payment-service
+          uri: lb://PAYMENT
+          predicates:
+            - Path=/payment/**
+          filters:
+            - PrefixPath=/api/v1
+            - name: CircuitBreaker
+              args:
+                name: commonCircuitBreaker
+                fallbackUri: forward:/fallback
+
+        - id: delivery-service
+          uri: lb://DELIVERY
+          predicates:
+            - Path=/delivery/**
+          filters:
+            - PrefixPath=/api/v1
+            - name: CircuitBreaker
+              args:
+                name: commonCircuitBreaker
+                fallbackUri: forward:/fallback
+
+        - id: shopping-cart-service
+          uri: lb://SHOPPING-CART
           predicates:
             - Path=/shopping-cart/**
           filters:
             - PrefixPath=/api/v1
-            - CircuitBreaker=myCircuitBreaker
+            - name: CircuitBreaker
+              args:
+                name: commonCircuitBreaker
+                fallbackUri: forward:/fallback
 
-        - id: shopping_store_service_route
-          uri: lb://shopping-store
+        - id: shopping-store-service
+          uri: lb://SHOPPING-STORE
           predicates:
             - Path=/shopping-store/**
           filters:
-            - name: Retry
-              args:
-                retries: 3
-                statuses: BAD_GATEWAY
-                methods: GET,POST
-                backoff:
-                  firstBackoff: 10ms
-                  maxBackoff: 50ms
-                  factor: 2
-                  basedOnPreviousValue: false
             - PrefixPath=/api/v1
             - name: CircuitBreaker
               args:
-                name: myCircuitBreaker
+                name: commonCircuitBreaker
+                fallbackUri: forward:/fallback
 
-server:
-  port: 8080
+        - id: warehouse-service
+          uri: lb://WAREHOUSE
+          predicates:
+            - Path=/warehouse/**
+          filters:
+            - PrefixPath=/api/v1
+            - name: CircuitBreaker
+              args:
+                name: commonCircuitBreaker
+                fallbackUri: forward:/fallback
 
-resilience4j.circuitbreaker:
-  instances:
-    myCircuitBreaker:
-      slidingWindowSize: 10
-      failureRateThreshold: 50
-      waitDurationInOpenState: 10000
-      permittedNumberOfCallsInHalfOpenState: 3
-      slidingWindowType: COUNT_BASED
-      minimumNumberOfCalls: 5
-      automaticTransitionFromOpenToHalfOpenEnabled: true
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 20
+        minimumNumberOfCalls: 10
+        failureRateThreshold: 50
+        slowCallRateThreshold: 50
+        slowCallDurationThreshold: 2s
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 5
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+
+    instances:
+      commonCircuitBreaker:
+        baseConfig: default
+
+  timelimiter:
+    configs:
+      default:
+        timeoutDuration: 3s
+
+    instances:
+      commonCircuitBreaker:
+        baseConfig: default

@@ -9,6 +9,7 @@ public class WarehouseProductMapper {
     public static WarehouseProduct toWarehouseProductEntity(NewProductInWarehouseRequest request) {
         return WarehouseProduct.builder()
                 .productId(request.getProductId())
+                .quantity(0)
                 .fragile(request.getFragile())
                 .weight(request.getWeight())
                 .width(request.getDimension().getWidth())

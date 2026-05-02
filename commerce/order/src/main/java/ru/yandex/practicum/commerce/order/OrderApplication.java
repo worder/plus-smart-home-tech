@@ -3,9 +3,10 @@ package ru.yandex.practicum.commerce.order;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
-import ru.yandex.practicum.commerce.feign.ShoppingStoreClient;
+import ru.yandex.practicum.commerce.feign.*;
 
-@EnableFeignClients(clients = {ShoppingStoreClient.class})
+@EnableFeignClients(clients = {
+        ShoppingCartClient.class, PaymentClient.class, DeliveryClient.class, WarehouseClient.class})
 @SpringBootApplication
 public class OrderApplication {
     public static void main(String[] args) {
