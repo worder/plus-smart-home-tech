@@ -14,15 +14,6 @@ public interface DeliveryClient {
     @PutMapping
     DeliveryDto planDelivery(@RequestBody DeliveryDto deliveryDto);
 
-//    @PostMapping("/successful")
-//    void deliverySuccessful(@RequestBody UUID orderId);
-
-//    @PostMapping("/picked")
-//    void deliveryPicked(@RequestBody UUID orderId);
-
-//    @PostMapping("/failed")
-//    void deliveryFailed(@RequestBody UUID orderId);
-
     @PostMapping("/cost")
     Double deliveryCost(@RequestBody OrderDto orderDto);
 }

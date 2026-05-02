@@ -17,15 +17,15 @@ import java.util.UUID;
 public class OrderBooking {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    UUID bookingId;
+    private UUID bookingId;
 
-    UUID orderId;
+    private UUID orderId;
 
-    UUID deliveryId;
+    private UUID deliveryId;
 
     @ElementCollection
     @CollectionTable(name = "booking_products", joinColumns = @JoinColumn(name = "booking_id"))
     @MapKeyColumn(name = "product_id")
     @Column(name = "quantity")
-    Map<UUID, Integer> products;
+    private Map<UUID, Integer> products;
 }

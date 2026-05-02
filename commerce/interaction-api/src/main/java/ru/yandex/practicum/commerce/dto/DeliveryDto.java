@@ -1,6 +1,5 @@
 package ru.yandex.practicum.commerce.dto;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.ToString;
 import lombok.Value;
@@ -12,7 +11,6 @@ import java.util.UUID;
 @Builder
 @ToString
 public class DeliveryDto {
-    @NotNull
     UUID deliveryId;
     AddressDto fromAddress;
     AddressDto toAddress;

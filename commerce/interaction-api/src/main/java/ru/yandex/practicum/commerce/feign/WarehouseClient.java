@@ -13,14 +13,8 @@ import java.util.UUID;
 
 @FeignClient(name = "warehouse", path = "/api/v1/warehouse")
 public interface WarehouseClient {
-//    @PutMapping
-//    void putNewProductInWarehouse(@RequestBody NewProductInWarehouseRequest request);
-
     @PostMapping("/check")
     BookedProductsDto checkBookedProducts(@RequestBody ShoppingCartDto cart);
-
-//    @PostMapping("/add")
-//    void addProductToWarehouse(@RequestBody AddProductToWarehouseRequest request);
 
     @GetMapping
     AddressDto getWarehouseAddress();

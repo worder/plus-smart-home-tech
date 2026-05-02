@@ -21,14 +21,14 @@ public class Payment {
 
     private UUID orderId;
 
-    double totalPayment;
+    private double totalPayment;
 
-    double deliveryTotal;
+    private double deliveryTotal;
 
-    double productTotal;
+    private double productTotal;
 
-    double feeTotal;
+    private double feeTotal;
 
     @Enumerated(EnumType.STRING)
-    PaymentStatus paymentStatus;
+    private PaymentStatus paymentStatus;
 }

@@ -9,7 +9,6 @@ import ru.yandex.practicum.commerce.dto.ProductDto;
 import ru.yandex.practicum.commerce.dto.enums.ProductCategory;
 import ru.yandex.practicum.commerce.dto.request.UpdateProductQuantityRequest;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @FeignClient(name = "shopping-store", path = "/api/v1/shopping-store")

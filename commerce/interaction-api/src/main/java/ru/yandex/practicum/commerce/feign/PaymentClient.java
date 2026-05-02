@@ -16,12 +16,6 @@ public interface PaymentClient {
     @PostMapping("/totalCost")
     double getTotalCost(@RequestBody OrderDto request);
 
-//    @PostMapping("/refund")
-//    void refundOrder(@RequestBody UUID paymentId);
-
     @PostMapping("/productCost")
     double productCost(@RequestBody OrderDto request);
-
-//    @PostMapping("/failed")
-//    void paymentFailed(@RequestBody UUID paymentId);
 }
