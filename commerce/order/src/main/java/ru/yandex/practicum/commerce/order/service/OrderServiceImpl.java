@@ -62,8 +62,8 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public OrderDto createOrder(CreateNewOrderRequest request) {
         Order order = Order.builder()
-                .shoppingCartId(request.getShoppingCart().getShoppingCartId())
                 .state(OrderState.NEW)
+                .shoppingCartId(request.getShoppingCart().getShoppingCartId())
                 .products(new HashMap<>(request.getShoppingCart().getProducts()))
                 .build();
 

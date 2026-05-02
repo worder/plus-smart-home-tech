@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS orders (
     delivery_price numeric(10,2),
     product_price numeric(10,2),
     created_on timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_on timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_on timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS order_products (
