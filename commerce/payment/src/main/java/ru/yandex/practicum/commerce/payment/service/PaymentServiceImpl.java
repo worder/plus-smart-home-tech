@@ -84,8 +84,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         final double delivery = request.getDeliveryPrice();
         final double product = request.getProductPrice();
-        double total = delivery + product;
-        total += calculateTax(total);
+        double total = delivery + product + calculateTax(product);
         log.info("Total cost calculated: {} for order: {}", total, request.getOrderId());
 
         return total;
@@ -112,7 +111,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .orElseThrow(() -> new ItemNotFoundException("Payment with id: [" + paymentId + "] not found"));
     }
 
-    private double calculateTax(double totalPrice) {
-        return totalPrice * TAX_FEE_MULTIPLIER;
+    private double calculateTax(double productPrice) {
+        return productPrice * TAX_FEE_MULTIPLIER;
     }
 }
