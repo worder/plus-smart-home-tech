@@ -8,14 +8,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.commerce.dto.BookedProductsDto;
-import ru.yandex.practicum.commerce.dto.DeliveryDto;
-import ru.yandex.practicum.commerce.dto.PaymentDto;
+import ru.yandex.practicum.commerce.dto.*;
 import ru.yandex.practicum.commerce.dto.request.AssemblyProductsForOrderRequest;
 import ru.yandex.practicum.commerce.dto.request.ReturnOrderRequest;
 import ru.yandex.practicum.commerce.error.ItemNotFoundException;
 import ru.yandex.practicum.commerce.feign.PaymentClient;
-import ru.yandex.practicum.commerce.dto.OrderDto;
 import ru.yandex.practicum.commerce.dto.enums.OrderState;
 import ru.yandex.practicum.commerce.dto.request.CreateNewOrderRequest;
 import ru.yandex.practicum.commerce.feign.DeliveryClient;
@@ -41,6 +38,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Page<OrderDto> findOrders(String username, Pageable pageable) {
+        log.debug("Calling shoppingCartClient.getShoppingCart, username: {}",  username);
         UUID cartId = shoppingCartClient.getShoppingCart(username).getShoppingCartId();
 
         Sort sort = pageable.getSort().isSorted()
@@ -72,12 +70,20 @@ public class OrderServiceImpl implements OrderService {
         log.info("Created new order: {} from request: {}", order, request);
 
         // make booking on warehouse
-        BookedProductsDto bookedProducts = warehouseClient
-                .arrangeAssemblyForOrder(AssemblyProductsForOrderRequest.builder()
-                        .orderId(order.getOrderId())
-                        .products(order.getProducts())
-                        .build());
-        log.info("Arranged assembly for order: {}", order.getOrderId());
+        BookedProductsDto bookedProducts;
+        try {
+            AssemblyProductsForOrderRequest assemblyRequest = AssemblyProductsForOrderRequest.builder()
+                    .orderId(order.getOrderId())
+                    .products(order.getProducts())
+                    .build();
+
+            log.debug("Calling warehouseClient.arrangeAssemblyForOrder, request: {}", assemblyRequest);
+            bookedProducts = warehouseClient.arrangeAssemblyForOrder(assemblyRequest);
+            log.info("warehouseClient.arrangeAssemblyForOrder success for order: {}", order.getOrderId());
+        } catch (Exception e) {
+            log.error("warehouseClient.arrangeAssemblyForOrder failed for order: {}", order.getOrderId(), e);
+            throw e;
+        }
 
         // set delivery properties
         order.setDeliveryVolume(bookedProducts.getDeliveryVolume());
@@ -85,13 +91,30 @@ public class OrderServiceImpl implements OrderService {
         order.setFragile(bookedProducts.getFragile());
 
         // create delivery
-        DeliveryDto delivery = deliveryClient.planDelivery(DeliveryDto.builder()
-                .orderId(order.getOrderId())
-                .fromAddress(request.getDeliveryAddress())
-                .toAddress(warehouseClient.getWarehouseAddress())
-                .build());
-        order.setDeliveryId(delivery.getDeliveryId());
-        log.info("Created delivery: {} for order: {}", delivery.getDeliveryId(), order.getOrderId());
+        try {
+            AddressDto warehouseAddress;
+            try {
+                warehouseAddress = warehouseClient.getWarehouseAddress();
+                log.info("warehouseClient.getWarehouseAddress success, address: {}", warehouseAddress);
+            } catch (Exception e){
+                log.info("warehouseClient.getWarehouseAddress failed");
+                throw e;
+            }
+
+            DeliveryDto deliveryRequest = DeliveryDto.builder()
+                    .orderId(order.getOrderId())
+                    .fromAddress(request.getDeliveryAddress())
+                    .toAddress(warehouseAddress)
+                    .build();
+
+            log.debug("Calling deliveryClient.planDelivery, request: {}", deliveryRequest);
+            DeliveryDto delivery = deliveryClient.planDelivery(deliveryRequest);
+            order.setDeliveryId(delivery.getDeliveryId());
+            log.info("deliveryClient.planDelivery success for order: {}", order.getOrderId());
+        } catch (Exception e) {
+            log.error("deliveryClient.planDelivery failed for order: {}", order.getOrderId(), e);
+            throw e;
+        }
 
         return OrderMapper.toDto(orderRepository.save(order));
     }
@@ -99,7 +122,15 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDto returnOrder(ReturnOrderRequest request) {
         Order order = this.getOrder(request.getOrderId());
-        warehouseClient.returnProducts(request.getProducts());
+
+        try {
+            log.debug("Calling warehouseClient.returnProducts, products: {}", order.getProducts());
+            warehouseClient.returnProducts(request.getProducts());
+            log.info("warehouseClient.returnProducts success for order: {}", order.getOrderId());
+        }  catch (Exception e) {
+            log.error("warehouseClient.returnProducts failed for order: {}", order.getOrderId(), e);
+            throw e;
+        }
 
         order.setState(OrderState.PRODUCT_RETURNED);
         log.info("Return order: {} from request: {}", order, request);
@@ -154,7 +185,17 @@ public class OrderServiceImpl implements OrderService {
         log.info("Calculated total price for order: {} is {}", order.getOrderId(), order.getTotalPrice());
 
         // initiate payment process
-        PaymentDto payment = paymentClient.payment(OrderMapper.toDto(order));
+        PaymentDto payment;
+        try {
+            OrderDto orderForPaymentRequest = OrderMapper.toDto(order);
+            log.debug("Calling paymentClient.payment, order: {}", orderForPaymentRequest);
+            payment = paymentClient.payment(orderForPaymentRequest);
+            log.info("paymentClient.payment success for order: {}", order.getOrderId());
+        } catch (Exception e) {
+            log.error("paymentClient.payment failed for order: {}", order.getOrderId(), e);
+            throw e;
+        }
+
         order.setPaymentId(payment.getPaymentId());
         log.info("Created payment: {} for order: {}", payment.getPaymentId(), order.getOrderId());
 

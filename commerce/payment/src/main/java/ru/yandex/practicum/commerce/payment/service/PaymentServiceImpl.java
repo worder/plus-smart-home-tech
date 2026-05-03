@@ -94,7 +94,15 @@ public class PaymentServiceImpl implements PaymentService {
     public void paymentSuccess(UUID paymentId) {
         Payment payment = getPayment(paymentId);
         payment.setPaymentStatus(PaymentStatus.SUCCESS);
-        orderClient.paymentSuccess(payment.getOrderId());
+
+        try {
+            orderClient.paymentSuccess(payment.getOrderId());
+            log.info("orderClient.paymentSuccess success for orderId: {}", payment.getOrderId());
+        } catch (Exception e) {
+            log.error("orderClient.paymentSuccess failed for orderId: {}", payment.getOrderId(), e);
+            throw e;
+        }
+
         log.info("Payment success for id: {}", payment.getPaymentId());
     }
 

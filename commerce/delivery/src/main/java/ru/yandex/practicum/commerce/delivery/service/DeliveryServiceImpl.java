@@ -47,7 +47,15 @@ public class DeliveryServiceImpl implements DeliveryService {
         Delivery delivery = this.getDelivery(deliveryId);
         delivery.setState(DeliveryState.DELIVERED);
         deliveryRepository.save(delivery);
-        orderClient.delivery(delivery.getOrderId());
+
+        try {
+            orderClient.delivery(delivery.getOrderId());
+            log.info("orderClient.delivery success for order {}", delivery.getOrderId());
+        }  catch (Exception e) {
+            log.error("orderClient.delivery failed for order {}", delivery.getOrderId(), e);
+            throw e;
+        }
+
         log.info("Delivery complete successfully: {} for order: {}", deliveryId, delivery.getOrderId());
     }
 
@@ -56,7 +64,16 @@ public class DeliveryServiceImpl implements DeliveryService {
         Delivery delivery = this.getDelivery(deliveryId);
         delivery.setState(DeliveryState.FAILED);
         deliveryRepository.save(delivery);
-        orderClient.deliveryFailed(delivery.getOrderId());
+
+        try {
+            orderClient.deliveryFailed(delivery.getOrderId());
+            log.info("orderClient.deliveryFail success for order {}", delivery.getOrderId());
+        } catch (Exception e) {
+            log.error("orderClient.deliveryFail failed for order {}", delivery.getOrderId(), e);
+            throw e;
+        }
+
+
         log.info("Delivery failed: {} for order: {}", deliveryId, delivery.getOrderId());
     }
 
@@ -64,11 +81,28 @@ public class DeliveryServiceImpl implements DeliveryService {
     public void deliveryPicked(UUID deliveryId) {
         Delivery delivery = this.getDelivery(deliveryId);
         delivery.setState(DeliveryState.IN_PROGRESS);
-        orderClient.assemblySuccess(delivery.getOrderId());
-        warehouseClient.shippedToDelivery(ShippedToDeliveryRequest.builder()
-                .deliveryId(deliveryId)
-                .orderId(delivery.getOrderId())
-                .build());
+
+        try {
+            orderClient.assemblySuccess(delivery.getOrderId());
+            log.info("orderClient.assemblySuccess success for order: {}", delivery.getOrderId());
+        } catch (Exception e) {
+            log.error("orderClient.assemblySuccess failed for order: {}", delivery.getOrderId(), e);
+            throw e;
+        }
+
+        try {
+            ShippedToDeliveryRequest request = ShippedToDeliveryRequest.builder()
+                    .deliveryId(deliveryId)
+                    .orderId(delivery.getOrderId())
+                    .build();
+            log.debug("Calling warehouseClient.shippedToDelivery, request: {}", request);
+            warehouseClient.shippedToDelivery(request);
+            log.info("warehouseClient.shippedToDelivery success for order: {}", delivery.getOrderId());
+        } catch (Exception e) {
+            log.error("warehouseClient.shippedToDelivery failed for order: {}", delivery.getOrderId(), e);
+            throw e;
+        }
+
         log.info("Delivery in progress: {} for order: {}", deliveryId, delivery.getOrderId());
     }
 
