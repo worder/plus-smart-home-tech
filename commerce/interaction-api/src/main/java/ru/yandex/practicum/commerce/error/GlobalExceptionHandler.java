@@ -40,14 +40,14 @@ public class GlobalExceptionHandler {
         return mapToDto(e, HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
     }
 
-    private void logStackTrace(Exception e) {
+    protected void logStackTrace(Exception e) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
         log.error(sw.toString());
     }
 
-    private static ErrorResponseDto mapToDto(Exception e, HttpStatus status, String message) {
+    protected static ErrorResponseDto mapToDto(Exception e, HttpStatus status, String message) {
         return ErrorResponseDto.builder()
                 .cause(e.getCause())
                 .stackTrace(Arrays.asList(e.getStackTrace()))

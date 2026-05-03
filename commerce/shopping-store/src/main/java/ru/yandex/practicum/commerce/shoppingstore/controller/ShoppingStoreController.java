@@ -7,9 +7,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.commerce.dto.ProductCategory;
 import ru.yandex.practicum.commerce.dto.ProductDto;
-import ru.yandex.practicum.commerce.dto.UpdateProductQuantityRequest;
+import ru.yandex.practicum.commerce.dto.enums.ProductCategory;
+import ru.yandex.practicum.commerce.dto.request.UpdateProductQuantityRequest;
 import ru.yandex.practicum.commerce.shoppingstore.service.ShoppingStoreService;
 
 import java.util.UUID;
@@ -22,7 +22,7 @@ public class ShoppingStoreController {
     private final ShoppingStoreService shoppingStoreService;
 
     @GetMapping
-    public Page<ProductDto> getProducts(@Valid @RequestParam ProductCategory category, Pageable pageable) {
+    public Page<ProductDto> getProducts(@RequestParam ProductCategory category, Pageable pageable) {
         return shoppingStoreService.findProducts(category, pageable);
     }
 
@@ -37,7 +37,7 @@ public class ShoppingStoreController {
     }
 
     @PostMapping("/removeProductFromStore")
-    public boolean deleteProduct(@Valid @RequestBody @NotNull UUID productId) {
+    public boolean deleteProduct(@RequestBody @NotNull UUID productId) {
         shoppingStoreService.deleteProduct(productId);
         return true;
     }

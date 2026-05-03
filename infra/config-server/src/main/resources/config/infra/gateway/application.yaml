@@ -1,0 +1,97 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+
+        - id: order-service
+          uri: lb://ORDER
+          predicates:
+            - Path=/order/**
+          filters:
+            - PrefixPath=/api/v1
+            - name: CircuitBreaker
+              args:
+                name: commonCircuitBreaker
+                fallbackUri: forward:/fallback
+
+        - id: payment-service
+          uri: lb://PAYMENT
+          predicates:
+            - Path=/payment/**
+          filters:
+            - PrefixPath=/api/v1
+            - name: CircuitBreaker
+              args:
+                name: commonCircuitBreaker
+                fallbackUri: forward:/fallback
+
+        - id: delivery-service
+          uri: lb://DELIVERY
+          predicates:
+            - Path=/delivery/**
+          filters:
+            - PrefixPath=/api/v1
+            - name: CircuitBreaker
+              args:
+                name: commonCircuitBreaker
+                fallbackUri: forward:/fallback
+
+        - id: shopping-cart-service
+          uri: lb://SHOPPING-CART
+          predicates:
+            - Path=/shopping-cart/**
+          filters:
+            - PrefixPath=/api/v1
+            - name: CircuitBreaker
+              args:
+                name: commonCircuitBreaker
+                fallbackUri: forward:/fallback
+
+        - id: shopping-store-service
+          uri: lb://SHOPPING-STORE
+          predicates:
+            - Path=/shopping-store/**
+          filters:
+            - PrefixPath=/api/v1
+            - name: CircuitBreaker
+              args:
+                name: commonCircuitBreaker
+                fallbackUri: forward:/fallback
+
+        - id: warehouse-service
+          uri: lb://WAREHOUSE
+          predicates:
+            - Path=/warehouse/**
+          filters:
+            - PrefixPath=/api/v1
+            - name: CircuitBreaker
+              args:
+                name: commonCircuitBreaker
+                fallbackUri: forward:/fallback
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 20
+        minimumNumberOfCalls: 10
+        failureRateThreshold: 50
+        slowCallRateThreshold: 50
+        slowCallDurationThreshold: 2s
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 5
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+
+    instances:
+      commonCircuitBreaker:
+        baseConfig: default
+
+  timelimiter:
+    configs:
+      default:
+        timeoutDuration: 3s
+
+    instances:
+      commonCircuitBreaker:
+        baseConfig: default
